@@ -1,12 +1,20 @@
 import axios from "axios";
 import { useState } from "react";
 import { useDataStore } from "../utils/dataStore";
+import SendBotButton from "./SendBotButton";
 
 const MessageInput = () => {
   const [newMessage, setNewMessage] = useState("");
   const setLastMessage = useDataStore((state) => state.setLastMessageUser);
+  const [numeroLead, setNumeroLead] = useState("87968434");
+  const [idLead, idEmpresa, idVendedor] = useDataStore((state) => [
+    state.idLead,
+    state.idEmpresa,
+    state.idVendedor,
+  ]);
 
   const handleMessage = (e) => setNewMessage(e.target.value);
+
   const sendMessage = () => {
     if (newMessage.trim() === "") return;
 
@@ -16,10 +24,10 @@ const MessageInput = () => {
         {
           message: newMessage,
           numero_wab: "whatsapp:+14155238886",
-          numero_lead: "whatsapp:+5215587968434",
-          id_empresa: 1,
-          id_lead: 1,
-          id_vendedor: 1,
+          numero_lead: `whatsapp:+52155${numeroLead}`,
+          id_empresa: idEmpresa,
+          id_lead: idLead,
+          id_vendedor: idVendedor,
         },
         {
           headers: {
@@ -35,13 +43,17 @@ const MessageInput = () => {
 
   return (
     <div className="flex w-full p-4">
+      <SendBotButton />
       <input
-        className="w-full border"
+        className="w-full border rounded px-2 overflow-auto"
         type="text"
         value={newMessage}
         onChange={handleMessage}
       />
-      <button className="w-32 bg-slate-400 rounded mx-2" onClick={sendMessage}>
+      <button
+        className="w-32 bg-slate-400 rounded mx-2 p-2"
+        onClick={sendMessage}
+      >
         Send
       </button>
     </div>

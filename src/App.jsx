@@ -1,65 +1,46 @@
 import { useEffect } from "react";
 import { socket } from "./socket";
-import ChatBubble from "./components/ChatBubble";
-import axios from "axios";
 import { useDataStore } from "./utils/dataStore";
 import MessageInput from "./components/MessageInput";
+import ChatBox from "./components/ChatBox";
+import NumberSelector from "./components/NumberSelector";
 
 const App = () => {
-  const [lastMessage, setLastMessage] = useDataStore((state) => [
-    state.lastMessage,
+  const [setLastMessage, loadHistory, getSocketAuth] = useDataStore((state) => [
     state.setLastMessageClient,
-  ]);
-  const [history, setHistory] = useDataStore((state) => [
-    state.history,
-    state.setHistory,
+    state.reloadData,
+    state.getSocketAuth,
   ]);
 
   useEffect(() => {
-    console.log("Load history");
-    axios
-      .post(
-        "http://localhost:3001/whatsapp/history",
-        {
-          id_lead: 1,
-          id_empresa: 1,
-          id_vendedor: 1,
-        },
-        {
-          headers: {
-            Authorization: import.meta.env.VITE_AUTH,
-          },
-        },
-      )
-      .then((res) => {
-        const { data } = res;
-        setHistory(data.historial);
-      });
-  }, []);
+    loadHistory();
 
-  useEffect(() => {
+    const handleConnect = () => console.log("Conectado");
+
     const handleMessage = (data) => {
       const { body, from } = data;
       setLastMessage({ body, from });
     };
 
-    socket.on("connect", () => console.log("Conectado"));
+    socket.auth = getSocketAuth();
+    socket.on("connect", handleConnect);
     socket.on("reciveMessage", handleMessage);
+    socket.connect();
 
     return () => {
+      socket.off("connect", handleConnect);
       socket.off("reciveMessage", handleMessage);
     };
-  }, [lastMessage]);
+  }, []);
 
   return (
     <div>
-      <h1 className="text-xl text-center">Chat whatsapp</h1>
+      <h1 className="text-2xl text-center font-mono py-2">
+        Demo Whatsapp Twilio
+      </h1>
+      <NumberSelector />
       <div>
-        <div className="mx-4 bg-slate-200 rounded h-[640px] overflow-auto p-6 flex flex-col gap-2">
-          {history.map((v, i) => (
-            <ChatBubble key={i} data={v} />
-          ))}
-        </div>
+        <ChatBox />
         <MessageInput />
       </div>
     </div>
