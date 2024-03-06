@@ -3,7 +3,7 @@ import { socket } from "./socket";
 import { useDataStore } from "./utils/dataStore";
 import MessageInput from "./components/MessageInput";
 import ChatBox from "./components/ChatBox";
-import NumberSelector from "./components/NumberSelector";
+import Settings from "./components/Settings";
 
 const App = () => {
   const [setLastMessage, loadHistory, getSocketAuth] = useDataStore((state) => [
@@ -18,8 +18,9 @@ const App = () => {
     const handleConnect = () => console.log("Conectado");
 
     const handleMessage = (data) => {
-      const { body, from } = data;
-      setLastMessage({ body, from });
+      const { body, from, disponibilidad } = data;
+
+      setLastMessage({ body, from, disponibilidad });
     };
 
     socket.auth = getSocketAuth();
@@ -34,14 +35,16 @@ const App = () => {
   }, []);
 
   return (
-    <div>
+    <div className="flex flex-col">
       <h1 className="text-2xl text-center font-mono py-2">
         Demo Whatsapp Twilio
       </h1>
-      <NumberSelector />
-      <div>
-        <ChatBox />
-        <MessageInput />
+      <div className="flex mx-4 flex-grow gap-2">
+        <Settings />
+        <div className="flex-grow">
+          <ChatBox />
+          <MessageInput />
+        </div>
       </div>
     </div>
   );

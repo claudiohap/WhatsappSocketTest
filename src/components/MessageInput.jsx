@@ -23,7 +23,7 @@ const MessageInput = () => {
         "http://localhost:3001/whatsapp/sendMessage",
         {
           message: newMessage,
-          numero_wab: "whatsapp:+14155238886",
+          numero_wab: "whatsapp:+5215593377298",
           numero_lead: `whatsapp:+52155${numeroLead}`,
           id_empresa: idEmpresa,
           id_lead: idLead,

@@ -17,7 +17,7 @@ const ChatBubble = ({ data }) => {
       className={`flex ${from === "client" ? "flex-row" : "flex-row-reverse"}`}
     >
       <div
-        className={`p-2 rounded text-white ${getColor(
+        className={`p-2 rounded-sm text-white ${getColor(
           from,
         )} max-w-sm h-fit overflow-auto`}
       >

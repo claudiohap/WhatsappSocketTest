@@ -1,34 +1,30 @@
 import { create } from "zustand";
 import axios from "axios";
-import { socket } from "../socket";
 
 const useDataStore = create((set, get) => ({
   lastMessage: {},
   history: [],
-  phoneNumbers: [
-    {
-      number: "5587968434",
-      value: 1,
-    },
-    {
-      number: "5528635899",
-      value: 3,
-    },
-    {
-      number: "5532899611",
-      value: 4,
-    },
-  ],
+  disponibilidad: false,
   idEmpresa: 1,
   idVendedor: 1,
   idLead: 1,
+
+  templates: [
+    {
+      text: "Reanudar",
+      value: "HXee98c2205ae2557df1a98e1554332801",
+    },
+    {
+      text: "Bienvenida",
+      value: "HXe4b868ffd49ef39fc632e676ec968045",
+    },
+  ],
   setIdLead: (id) => {
-    socket.disconnect();
     set({ idLead: id });
   },
   reloadData: async () => {
-    console.log("reload data");
     if (get().idLead === 0) return;
+
     const response = await axios.post(
       "http://localhost:3001/whatsapp/history",
       {
@@ -42,16 +38,14 @@ const useDataStore = create((set, get) => ({
         },
       },
     );
-    const history = response.data.historial;
-    console.log(`IDLEAD: ${get().idLead}`);
-    console.log(response);
-    console.log(history);
+    const history = response.data.historial ?? [];
+    const disponibilidad = response.data.disponibilidad ?? false;
 
-    set({ history: await history });
+    set({ history: await history, disponibilidad });
   },
   setLastMessageClient: (message) => {
-    console.log(message);
     return set((state) => ({
+      disponibilidad: message.disponibilidad,
       lastMessage: message,
       history: [...state.history, message],
     }));
@@ -61,6 +55,7 @@ const useDataStore = create((set, get) => ({
       const newMessage = {
         body: message,
         from: "user",
+        date: Date.now(),
       };
       return {
         lastMessage: message,
